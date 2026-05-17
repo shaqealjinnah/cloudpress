@@ -2,7 +2,7 @@
 resource "aws_security_group" "wordpress_security_group" {
     name = "wordpress-security-group"
     description = "Allow HTTP and SSH traffic inbound and all outbound traffic"
-    vpc_id = aws_vpc.wordpress_vpc.id
+    vpc_id = var.vpc_id
 }
 
 resource "aws_vpc_security_group_ingress_rule" "http" {

@@ -13,8 +13,3 @@ variable "instance_type" {
     type = string
     description = "Type of Instance used"
 }
-
-variable "key_name" {
-    type = string
-    description = "EC2 key pair name for SSH access"
-}

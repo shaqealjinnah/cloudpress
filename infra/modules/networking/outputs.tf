@@ -1,9 +1,9 @@
-output "wordpress_public_ip" {
-  description = "Public IP address of the WordPress instance"
-  value       = aws_instance.wordpress_instance.public_ip
+output "vpc_id" {
+  description = "ID of the VPC"
+  value = aws_vpc.wordpress_vpc.id
 }
 
-output "wordpress_url" {
-  description = "URL to access WordPress"
-  value       = "http://${aws_instance.wordpress_instance.public_ip}"
+output "subnet_id" {
+  description = "ID of subnet"
+  value = aws_subnet.wordpress_public_subnet_1.id
 }
