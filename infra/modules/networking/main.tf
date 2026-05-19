@@ -3,50 +3,83 @@ resource "aws_vpc" "wordpress_vpc" {
     cidr_block = var.vpc_cidr
     enable_dns_support = true
     enable_dns_hostnames = true
-    
 
     tags = {
-        Name = "wordpress-vpc"
+        Name = "wordpress--vpc"
     }
 }
 
-# Create Subnet
-resource "aws_subnet" "wordpress_public_subnet_1" {
+# Create Public Subnets
+resource "aws_subnet" "public" {
+    count = 2
     vpc_id = aws_vpc.wordpress_vpc.id
-    availability_zone = "${var.aws_region}a"
-    cidr_block = "10.0.0.0/24"
+    availability_zone = var.availability_zones[count.index]
+    cidr_block = var.public_subnet_cidr[count.index]
+
     map_public_ip_on_launch = true
 
     tags = {
-        Name = "wordpress-public-subnet-1"
+        Name = "wordpress--public--subnet-${count.index + 1}"
     }
 }
 
-# Create Internet Gateway
+# Create Private Subnets
+resource "aws_subnet" "private" {
+    count = 2
+    vpc_id = aws_vpc.wordpress_vpc.id
+    availability_zone = var.availability_zones[count.index]
+    cidr_block = var.private_subnet_cidr[count.index]
+
+    map_public_ip_on_launch = false
+
+    tags = {
+        Name = "wordpress--private-subnet-${count.index + 1}"
+    }
+}
+
+# Attach Internet Gateway
 resource "aws_internet_gateway" "wordpress_igw" {
     vpc_id = aws_vpc.wordpress_vpc.id
 
     tags = {
-        Name = "wordpress-internet-gateway"
+        Name = "wordpress--internet-gateway"
     }
 }
 
 # Create Route Table + Routes
-resource "aws_route_table" "wordpress_route_table" {
+resource "aws_route_table" "public" {
     vpc_id = aws_vpc.wordpress_vpc.id
 
     tags = {
-        Name = "wordpress-route-table"
+        Name = "wordpress--public-route-table"
     }
 }
 
-resource "aws_route" "wordpress_internet_access" {
-    route_table_id = aws_route_table.wordpress_route_table.id
+resource "aws_route" "internet_access" {
+    route_table_id = aws_route_table.public.id
     destination_cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.wordpress_igw.id
 }
 
-resource "aws_route_table_association" "wordpress_subnet_association" {
-    subnet_id = aws_subnet.wordpress_public_subnet_1.id
-    route_table_id = aws_route_table.wordpress_route_table.id
+resource "aws_route_table_association" "public" {
+    count = length(aws_subnet.public)
+
+    subnet_id = aws_subnet.public[count.index].id
+    route_table_id = aws_route_table.public.id
+}
+
+# Create Private Route Table and Configure Routes
+resource "aws_route_table" "private" {
+    vpc_id = aws_vpc.wordpress_vpc.id
+
+    tags = {
+        Name = "wordpress--private-route-table"
+    }
+}
+
+resource "aws_route_table_association" "private" {
+    count = length(aws_subnet.private)
+
+    subnet_id = aws_subnet.private[count.index].id
+    route_table_id = aws_route_table.private.id
 }

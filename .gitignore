@@ -11,3 +11,7 @@ terraform.tfvars
 # Environment files
 .env
 .env.*
+
+# SSH
+*.pem
+*.pem*

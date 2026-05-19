@@ -3,7 +3,12 @@ output "vpc_id" {
   value = aws_vpc.wordpress_vpc.id
 }
 
-output "subnet_id" {
+output "public_subnet_ids" {
+  description = "IDs of public subnet"
+  value = aws_subnet.public[*].id
+}
+
+output "private_subnet_ids" {
   description = "ID of subnet"
-  value = aws_subnet.wordpress_public_subnet_1.id
+  value = aws_subnet.private[*].id
 }

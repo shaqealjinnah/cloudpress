@@ -1,25 +1,61 @@
 variable "aws_region" {
-    type = string
-    description = "AWS Region"
+  type        = string
+  description = "AWS Region"
 }
 
 variable "vpc_cidr" {
-    type = string
-    description = "CIDR for VPC"
-    default = "10.0.0.0/16"
+  type        = string
+  description = "CIDR for VPC"
+  default     = "10.0.0.0/16"
 }
 
 variable "admin_ip" {
-    type  = string
-    description = "My IP address"
+  type        = string
+  description = "My IP address"
 }
 
 variable "instance_type" {
-    type = string
-    description = "Type of Instance used"
+  type        = string
+  description = "Type of Instance used"
 }
 
 variable "key_name" {
-    type = string
-    description = "EC2 key pair name for SSH access"
+  type        = string
+  description = "EC2 key pair name for SSH access"
+}
+
+variable "db_instance_class" {
+  description = "RDS instance class"
+  type        = string
+}
+
+variable "db_name" {
+  description = "The name of the WordPress database"
+  type        = string
+}
+
+variable "db_username" {
+  description = "The username for the WordPress database"
+  type        = string
+}
+
+variable "db_password" {
+  description = "The password for the WordPress database"
+  type        = string
+  sensitive   = true
+}
+
+variable "public_subnet_cidr" {
+    type = list(string)
+    description = "List of CIDR for public subnets"
+}
+
+variable "private_subnet_cidr" {
+    type = list(string)
+    description = "List of CIDR for private subnets"
+}
+
+variable "availability_zones" {
+    type = list(string)
+    description = "List of Availability Zones"
 }

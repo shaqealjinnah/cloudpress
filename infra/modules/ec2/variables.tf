@@ -8,12 +8,37 @@ variable "vpc_security_group_ids" {
     description = "List of security group IDs"
 }
 
-variable "subnet_id" {
-    type = string
-    description = "ID of subnet"
+variable "public_subnet_ids" {
+    type = list(string)
+    description = "IDs of public subnets"
 }
 
 variable "key_name" {
     type = string
     description = "EC2 key pair name for SSH access"
+}
+
+variable "db_name" {
+  description = "The name of the WordPress database"
+  type        = string
+}
+
+variable "db_username" {
+  description = "The username for the WordPress database"
+  type        = string
+}
+
+variable "db_password" {
+  description = "The password for the WordPress database"
+  type        = string
+  sensitive   = true
+}
+
+variable "db_instance" {
+    description = "The AWS DB Instance"
+    type = object({
+        endpoint = string
+        port = number
+    })
+
 }
