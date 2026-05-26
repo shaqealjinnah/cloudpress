@@ -25,11 +25,10 @@ resource "aws_instance" "wordpress_instance" {
     ami = data.aws_ami.ubuntu.id
     instance_type = var.instance_type
     associate_public_ip_address = true
-    subnet_id = var.public_subnet_ids[count.index]
+    subnet_id = var.private_app_subnet_ids[count.index]
     vpc_security_group_ids = var.vpc_security_group_ids
 
     key_name = var.key_name
-
     user_data = data.template_file.user_data.rendered
 
     tags = {

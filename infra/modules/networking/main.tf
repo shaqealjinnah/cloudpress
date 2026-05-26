@@ -59,6 +59,29 @@ resource "aws_internet_gateway" "wordpress_igw" {
     }
 }
 
+# Create NAT Gateway and EIP
+resource "aws_eip" "nat" {
+    count = 2
+    domain = "vpc"
+
+    tags = {
+        Name = "wordpress--eip-${count.index + 1}"
+    }
+}
+
+resource "aws_nat_gateway" "public" {
+    count = length(aws_subnet.public)
+
+    subnet_id = aws_subnet.public[count.index].id
+    allocation_id = aws_eip.nat[count.index].id
+
+    depends_on = [aws_internet_gateway.wordpress_igw]
+
+    tags = {
+        Name = "wordpress--nat-gateway-${count.index + 1}"
+    }
+}
+
 # Create Route Table + Routes
 resource "aws_route_table" "public" {
     vpc_id = aws_vpc.wordpress_vpc.id
@@ -98,16 +121,25 @@ resource "aws_route_table_association" "private_db" {
 }
 
 resource "aws_route_table" "private_app" {
+    count = length(aws_subnet.public)
     vpc_id = aws_vpc.wordpress_vpc.id
 
     tags = {
-        Name = "wordpress--private-app-route-table"
+        Name = "wordpress--private-app-route-table-${count.index + 1}"
     }
+}
+
+resource "aws_route" "private_nat" {
+    count = length(aws_nat_gateway.public)
+
+    route_table_id = aws_route_table.private_app[count.index].id
+    destination_cidr_block = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.public[count.index].id
 }
 
 resource "aws_route_table_association" "private_app" {
     count = length(aws_subnet.private_app)
 
     subnet_id = aws_subnet.private_app[count.index].id
-    route_table_id = aws_route_table.private_app.id
+    route_table_id = aws_route_table.private_app[count.index].id
 }

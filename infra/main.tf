@@ -22,7 +22,7 @@ module "ec2" {
 
   instance_type          = var.instance_type
   vpc_security_group_ids = module.security.vpc_security_group_ids
-  public_subnet_ids      = module.networking.public_subnet_ids
+  private_app_subnet_ids = module.networking.private_app_subnet_ids
   key_name               = var.key_name
   db_name                = var.db_name
   db_username            = var.db_username

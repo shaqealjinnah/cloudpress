@@ -8,9 +8,9 @@ variable "vpc_security_group_ids" {
     description = "List of security group IDs"
 }
 
-variable "public_subnet_ids" {
+variable "private_app_subnet_ids" {
     type = list(string)
-    description = "IDs of public subnets"
+    description = "IDs of private app subnets"
 }
 
 variable "key_name" {
