@@ -1,7 +1,7 @@
 # RDS Subnet Group
 resource "aws_db_subnet_group" "wordpress" {
   name       = "wordpress-subnet-group"
-  subnet_ids = var.private_subnet_ids
+  subnet_ids = var.private_db_subnet_ids
 
   tags = {
     Name = "WordPress DB subnet group"

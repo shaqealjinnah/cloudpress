@@ -24,16 +24,29 @@ resource "aws_subnet" "public" {
 }
 
 # Create Private Subnets
-resource "aws_subnet" "private" {
+resource "aws_subnet" "private_db" {
     count = 2
     vpc_id = aws_vpc.wordpress_vpc.id
     availability_zone = var.availability_zones[count.index]
-    cidr_block = var.private_subnet_cidr[count.index]
+    cidr_block = var.private_db_subnet_cidr[count.index]
 
     map_public_ip_on_launch = false
 
     tags = {
-        Name = "wordpress--private-subnet-${count.index + 1}"
+        Name = "wordpress--private-db-subnet-${count.index + 1}"
+    }
+}
+
+resource "aws_subnet" "private_app" {
+    count = 2
+    vpc_id = aws_vpc.wordpress_vpc.id
+    availability_zone = var.availability_zones[count.index]
+    cidr_block = var.private_app_subnet_cidr[count.index]
+
+    map_public_ip_on_launch = false
+
+    tags = {
+        Name = "wordpress--private-app-subnet-${count.index + 1}"
     }
 }
 
@@ -69,17 +82,32 @@ resource "aws_route_table_association" "public" {
 }
 
 # Create Private Route Table and Configure Routes
-resource "aws_route_table" "private" {
+resource "aws_route_table" "private_db" {
     vpc_id = aws_vpc.wordpress_vpc.id
 
     tags = {
-        Name = "wordpress--private-route-table"
+        Name = "wordpress--private-db-route-table"
     }
 }
 
-resource "aws_route_table_association" "private" {
-    count = length(aws_subnet.private)
+resource "aws_route_table_association" "private_db" {
+    count = length(aws_subnet.private_db)
 
-    subnet_id = aws_subnet.private[count.index].id
-    route_table_id = aws_route_table.private.id
+    subnet_id = aws_subnet.private_db[count.index].id
+    route_table_id = aws_route_table.private_db.id
+}
+
+resource "aws_route_table" "private_app" {
+    vpc_id = aws_vpc.wordpress_vpc.id
+
+    tags = {
+        Name = "wordpress--private-app-route-table"
+    }
+}
+
+resource "aws_route_table_association" "private_app" {
+    count = length(aws_subnet.private_app)
+
+    subnet_id = aws_subnet.private_app[count.index].id
+    route_table_id = aws_route_table.private_app.id
 }

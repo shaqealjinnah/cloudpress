@@ -14,9 +14,14 @@ variable "public_subnet_cidr" {
     description = "List of CIDR for public subnets"
 }
 
-variable "private_subnet_cidr" {
+variable "private_db_subnet_cidr" {
     type = list(string)
-    description = "List of CIDR for private subnets"
+    description = "List of CIDR for private db subnets"
+}
+
+variable "private_app_subnet_cidr" {
+    type = list(string)
+    description = "List of CIDR for private app subnets"
 }
 
 variable "instance_type" {

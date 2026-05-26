@@ -46,16 +46,21 @@ variable "db_password" {
 }
 
 variable "public_subnet_cidr" {
-    type = list(string)
-    description = "List of CIDR for public subnets"
+  type        = list(string)
+  description = "List of CIDR for public subnets"
 }
 
-variable "private_subnet_cidr" {
-    type = list(string)
-    description = "List of CIDR for private subnets"
+variable "private_db_subnet_cidr" {
+  type        = list(string)
+  description = "List of CIDR for private subnets for RDS"
+}
+
+variable "private_app_subnet_cidr" {
+  type        = list(string)
+  description = "List of CIDR for private subnets for ec2"
 }
 
 variable "availability_zones" {
-    type = list(string)
-    description = "List of Availability Zones"
+  type        = list(string)
+  description = "List of Availability Zones"
 }

@@ -18,8 +18,8 @@ variable "db_password" {
   sensitive   = true
 }
 
-variable "private_subnet_ids" {
-  description = "List of IDs for Private Subnets"
+variable "private_db_subnet_ids" {
+  description = "List of IDs for Private Subnets for RDS"
   type = list(string)
 }
 
