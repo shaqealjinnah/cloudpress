@@ -1,19 +1,77 @@
-# WordPress Deployment with Terraform using AWS
+# CloudPress - 3 Tier Wordpress Deployment
+<!-- Project Badges -->
+![Cloud AWS](https://img.shields.io/badge/Cloud-AWS-orange)
+![Terraform](https://img.shields.io/badge/IaC-Terraform-purple)
+![Bash Scripting](https://img.shields.io/badge/Scripting-Bash-blue)
+<!-- ![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-blue) -->
 
-Provision a complete WordPress stack on AWS using Terraform end-to-end, including networking, security groups, EC2, and automated bootstrapping.
+CloudPress is a production-style 3 tier WordPress deployment built on AWS using Terraform Infrastructure as Code
+
+## Overview
+
+- **Infrastructure:** Terraform with modular architecture
+- **Bash Scripting:** Use user-data bash scripts to automate WordPress startup
+- **Load Balancing:** Application Load Balancer for traffic management
+- **Database Isolation:** Amazon RDS in private subnets
+- **Security:** Private subnets, security groups, OIDC and IAM
+<!-- - **CI/CD:** GitHub Actions with automated deployments -->
+
+## Architecture Diagram
+
+![Architecture Diagram](./images/3-tier-cloud-architecture.png)
+
+### High Level Flow
+
+```
+User searches our domain and is sent to ALB
+                        ↓
+ALB forwards request to EC2 Instance (private subnet)
+                        ↓            
+EC2 Instance sends stateful data to RDS
+                        ↓            
+Data is stored in RDS for persistent storage
+```
+
+### Architecture Overview
+
+**Presentation Layer:**
+- Application Load Balancer deployed across 2 public subnets
+- NAT Gateway for outbound internet access from private resources
+
+**Application Layer:**
+- WordPress ec2 instances deployed in private subnets
+- Instances are not publicly accessible
+- Traffic only allowed from the ALB security group
+
+**Data Layer:**
+- Amazon RDS MySQL deployed in private database subnets
+- Database access restricted to the application layer only
+
 
 ## Project Structure
 
 ```
-terraform-wordpress/
+cloudpress/
 ├── infra/
-|   ├── backend.tf              # Remote state configuration (S3 + state locking)
-|   ├── providers.tf            # AWS provider configuration
-|   ├── main.tf                 # Core infrastructure resources
-|   ├── variables.tf            # Input variables
-|   └── outputs.tf              # Useful outputs (public IP, URL)
-└── scripts/
-    └── install_wordpress.sh    # EC2 bootstrap script
+|   ├── .terraform.lock.hcl
+|   ├── backend.tf
+|   ├── main.tf
+|   ├── providers.tf
+|   ├── terraform.tfvars
+|   ├── variables.tf
+|   └── modules
+|       ├── alb/
+|       ├── ec2/
+|       ├── networking/
+|       ├── rds/
+|       └── security/
+|
+├── scripts/
+|   └── install_wordpress.sh
+|
+├── images/
+|
+└── README.md
 ```
 
 ## How It Works
@@ -38,7 +96,7 @@ terraform-wordpress/
 ### 1. Clone the Repo
 
 ```bash
-git clone https://github.com/shaqealjinnah/terraform-wordpress.git
+git clone https://github.com/shaqealjinnah/cloudpress.git
 cd infra
 ```
 
@@ -69,8 +127,7 @@ The screenshot above shows the successfully deployed WordPress site running on a
 
 ## Future Improvements
 
-- Modularise Terraform configuration
-- Replace MySQL to RDS in private subnet
 - Add HTTPS using ALB + ACM
 - Add CI pipeline for Terraform formatting and validation
+- Add sticky session to ALB for persistent data
 
